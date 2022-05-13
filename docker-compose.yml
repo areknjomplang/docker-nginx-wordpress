@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+    web:
+        build:
+            context: ./nginx
+        restart: always
+        container_name: webnginx
+        image: web/nginx
+        network_mode: host
+        volumes:
+            - wpdev:/var/www/html
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx/log:/var/log/nginx
+            - ./wptheme:/var/www/html/wp-content/themes/wptheme
+            - ./plugins:/var/www/html/wp-content/plugins
+            - ./uploads:/var/www/html/wp-content/uploads
+        ports:
+            - '80:80'
+            - '443:443'
+        depends_on:
+            - wp
+    wp:
+        build:
+            context: ./wp
+        restart: always
+        container_name: webwp
+        image: web/wp
+        network_mode: host
+        ports: 
+            - 9000:9000
+        volumes:
+            - wpdev:/var/www/html
+            - ./wp/wp-config.php:/var/www/html/wp-config.php
+            - ./wptheme:/var/www/html/wp-content/themes/wptheme
+            - ./plugins:/var/www/html/wp-content/plugins
+            - ./uploads:/var/www/html/wp-content/uploads
+volumes:
+    wpdev:
